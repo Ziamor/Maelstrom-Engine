@@ -12,6 +12,8 @@ namespace Maelstrom_Engine
     class Shader : IDisposable
     {
         int Handle;
+        private readonly Dictionary<string, int> uniformLocations;
+
         public Shader(string vertexPath, string fragmentPath)
         {
             string VertexShaderSource;
@@ -58,6 +60,23 @@ namespace Maelstrom_Engine
             GL.DetachShader(Handle, FragmentShader);
             GL.DeleteShader(FragmentShader);
             GL.DeleteShader(VertexShader);
+
+            GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out int numberOfUniforms);
+
+            uniformLocations = new Dictionary<string, int>();
+
+            // Loop over all the uniforms,
+            for (var i = 0; i < numberOfUniforms; i++)
+            {
+                // get the name of this uniform,
+                var key = GL.GetActiveUniform(Handle, i, out _, out _);
+
+                // get the location,
+                var location = GL.GetUniformLocation(Handle, key);
+
+                // and then add it to the dictionary.
+                uniformLocations.Add(key, location);
+            }
         }
 
         public void Use()
@@ -75,6 +94,12 @@ namespace Maelstrom_Engine
             int location = GL.GetUniformLocation(Handle, name);
 
             GL.Uniform1(location, value);
+        }
+
+        internal void SetMatrix4(string name, Matrix4 matrix)
+        {
+            GL.UseProgram(Handle);
+            GL.UniformMatrix4(uniformLocations[name], true, ref matrix);
         }
 
         #region IDisposable Support

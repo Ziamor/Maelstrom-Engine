@@ -61,10 +61,16 @@ namespace Maelstrom_Engine
 
             GL.BindVertexArray(VertexArrayObject);
 
+            Matrix4 rotation = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(90.0f));
+            Matrix4 scale = Matrix4.CreateScale(0.5f, 0.5f, 0.5f);
+            Matrix4 transform = rotation * scale;
+
             paperTex.Use(TextureUnit.Texture0);
             woodTex.Use(TextureUnit.Texture1);
 
             shader.Use();
+
+            shader.SetMatrix4("transform", transform);
 
             GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
 
