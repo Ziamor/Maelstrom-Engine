@@ -11,7 +11,7 @@ namespace Maelstrom_Engine
 {
     class Shader : IDisposable
     {
-        int Handle;
+        public readonly int Handle;
         private readonly Dictionary<string, int> uniformLocations;
 
         public Shader(string vertexPath, string fragmentPath)
