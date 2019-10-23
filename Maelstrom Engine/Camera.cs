@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Maelstrom_Engine
 {
-    class Camera
+    public class Camera
     {
         public float speed = 5f;
         public float mouseSensitivity = 0.05f;
@@ -22,6 +22,12 @@ namespace Maelstrom_Engine
         Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
 
         Vector2 lastPos;
+
+        GameWindow parentWindow;
+
+        public Camera(GameWindow parentWindow) {
+            this.parentWindow = parentWindow;
+        }
 
         public void Update(float deltaTime, KeyboardState input, MouseState mouse)
         {
@@ -77,6 +83,12 @@ namespace Maelstrom_Engine
         public Matrix4 ViewMatrix {
             get {
                 return  Matrix4.LookAt(position, position + front, up);;
+            }
+        }
+
+        public Matrix4 ProjectionMatrix {
+            get {
+                return Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45), parentWindow.Width / (float)parentWindow.Height, 0.1f, 100f);
             }
         }
     }

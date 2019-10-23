@@ -9,7 +9,7 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Maelstrom_Engine
 {
-    class Shader : IDisposable
+    public class Shader : IDisposable
     {
         public readonly int Handle;
         private readonly Dictionary<string, int> uniformLocations;
