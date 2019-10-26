@@ -22,9 +22,9 @@ namespace Maelstrom_Engine {
 
         float time = 0;
 
-        Model nanoSuit;
+        Model nanoSuit, axe, lamp;
 
-        Transform nanoSuitTransform;
+        Transform nanoSuitTransform, axeTransform, lampTransform;
 
         private readonly Vector3 lightPos = new Vector3(1.2f, 1.0f, 2.0f);        
 
@@ -62,7 +62,9 @@ namespace Maelstrom_Engine {
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            nanoSuit.Render(nanoSuitTransform, camera);
+            //nanoSuit.Render(nanoSuitTransform, camera);
+            axe.Render(axeTransform, camera);
+            lamp.Render(lampTransform, camera);
 
             SwapBuffers();
 
@@ -89,8 +91,13 @@ namespace Maelstrom_Engine {
             lightShader = new Shader("Shaders/light_shader.vert", "Shaders/light_shader.frag");
 
             nanoSuitTransform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f));
+            axeTransform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(1f, 1f, 1f));
+            lampTransform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0.01f, 0.01f, 0.01f));
 
-            nanoSuit = new Model("scene.fbx");
+            //nanoSuit = new Model("scene.fbx");
+            lamp = new Model("lamp.obj");
+            axe = new Model("Viking_Axe_Straight.fbx");
+
             camera = new Camera(this);
 
             base.OnLoad(e);

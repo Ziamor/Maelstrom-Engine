@@ -36,13 +36,14 @@ namespace Maelstrom_Engine {
                     Scene scene = importer.ImportFile(path, PostProcessPreset.TargetRealTimeQuality | PostProcessSteps.FlipWindingOrder);
 
                     if (scene != null && scene.HasMeshes)
-                        Console.WriteLine($"Import of {fileName} SUCCESSFUL!");
+                        Console.WriteLine($"Loading {fileName}");
                     else {
-                        Console.WriteLine($"Import of {fileName} FAILED!");
+                        Console.WriteLine($"ERROR: Failed to load {fileName}");
                         return;
                     }
 
                     ProcessNode(scene.RootNode, scene);
+                    Console.WriteLine($"Finished loading {fileName}");
                 }
                 catch (Exception e) {
                     Console.WriteLine($"ERROR: Somthing went wrong while loading the mesh {fileName}. " + e.Message);
@@ -53,7 +54,7 @@ namespace Maelstrom_Engine {
         private void ProcessNode(Node node, Scene scene) {
             List<int> assImpNodeMeshIndicies = node.MeshIndices;
             for (int i = 0; i < assImpNodeMeshIndicies.Count; i++) {
-                Assimp.Mesh assImpMesh = scene.Meshes[i];
+                Assimp.Mesh assImpMesh = scene.Meshes[assImpNodeMeshIndicies[i]];
 
                 Mesh newMesh = ProcessMesh(assImpMesh, scene);
                 meshes.Add(newMesh);
@@ -112,10 +113,12 @@ namespace Maelstrom_Engine {
             for (int i = 0; i < textureSlots.Length; i++) {
                 TextureSlot textureSlot = textureSlots[i];
                 // FBX files store the file name as the character * followed by a number the represents the index for an embedded texture
-                if (Regex.IsMatch(textureSlot.FilePath, @"\\*\d+")) {
+                if (Regex.IsMatch(textureSlot.FilePath, @"\*\d+")) {
                     int embeddedTextureIndex = int.Parse(textureSlot.FilePath.TrimStart('*'));
                     Assimp.EmbeddedTexture tex = scene.Textures[embeddedTextureIndex];
                     textures.Add(Texture.LoadTextureFromEmbeddedTexture(tex));
+                } else {
+                    textures.Add(Texture.LoadTextureFromPath("Assets\\" + Path.GetFileName(textureSlot.FilePath)));
                 }
             }
             Material material = new Material(textures, Game.defaultDiffuseShader);
