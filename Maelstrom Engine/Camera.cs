@@ -13,12 +13,12 @@ namespace Maelstrom_Engine
         public float speed = 5f;
         public float mouseSensitivity = 0.05f;
 
-        float yaw, pitch;
+        float yaw = 270, pitch;
 
         bool firstMove = false;
 
-        Vector3 position = new Vector3(0.0f, 0.0f, -3.0f);
-        Vector3 front = new Vector3(0.0f, 0.0f, 1.0f);
+        Vector3 position = new Vector3(0.0f, 0.0f, 3f);
+        Vector3 front = new Vector3(0.0f, 0.0f, -1.0f);
         Vector3 up = new Vector3(0.0f, 1.0f, 0.0f);
 
         Vector2 lastPos;
