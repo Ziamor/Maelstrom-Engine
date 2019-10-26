@@ -14,55 +14,8 @@ using Assimp.Configs;
 
 namespace Maelstrom_Engine {
     class Game : GameWindow {
-        Vertex[] vertices = {
-            new Vertex(-0.5f, -0.5f, -0.5f,  0.0f, 0.0f),
-            new Vertex( 0.5f, -0.5f, -0.5f,  1.0f, 0.0f),
-            new Vertex(0.5f,  0.5f, -0.5f,  1.0f, 1.0f),
-            new Vertex( 0.5f,  0.5f, -0.5f,  1.0f, 1.0f),
-            new Vertex(-0.5f,  0.5f, -0.5f,  0.0f, 1.0f),
-            new Vertex( -0.5f, -0.5f, -0.5f,  0.0f, 0.0f),
+        public static Shader defaultDiffuseShader;
 
-            new Vertex(-0.5f, -0.5f,  0.5f,  0.0f, 0.0f),
-            new Vertex( 0.5f, -0.5f,  0.5f,  1.0f, 0.0f),
-            new Vertex( 0.5f,  0.5f,  0.5f,  1.0f, 1.0f),
-            new Vertex( 0.5f,  0.5f,  0.5f,  1.0f, 1.0f),
-            new Vertex(-0.5f,  0.5f,  0.5f,  0.0f, 1.0f),
-            new Vertex(-0.5f, -0.5f,  0.5f,  0.0f, 0.0f),
-
-            new Vertex( -0.5f,  0.5f,  0.5f,  1.0f, 0.0f),
-            new Vertex(-0.5f,  0.5f, -0.5f,  1.0f, 1.0f),
-            new Vertex(-0.5f, -0.5f, -0.5f,  0.0f, 1.0f),
-            new Vertex(-0.5f, -0.5f, -0.5f,  0.0f, 1.0f),
-            new Vertex(-0.5f, -0.5f,  0.5f,  0.0f, 0.0f),
-            new Vertex(-0.5f,  0.5f,  0.5f,  1.0f, 0.0f),
-
-            new Vertex( 0.5f,  0.5f,  0.5f,  1.0f, 0.0f),
-            new Vertex(0.5f,  0.5f, -0.5f,  1.0f, 1.0f),
-            new Vertex( 0.5f, -0.5f, -0.5f,  0.0f, 1.0f),
-            new Vertex( 0.5f, -0.5f, -0.5f,  0.0f, 1.0f),
-            new Vertex( 0.5f, -0.5f,  0.5f,  0.0f, 0.0f),
-            new Vertex(0.5f,  0.5f,  0.5f,  1.0f, 0.0f),
-
-            new Vertex(-0.5f, -0.5f, -0.5f,  0.0f, 1.0f),
-            new Vertex( 0.5f, -0.5f, -0.5f,  1.0f, 1.0f),
-            new Vertex( 0.5f, -0.5f,  0.5f,  1.0f, 0.0f),
-            new Vertex( 0.5f, -0.5f,  0.5f,  1.0f, 0.0f),
-            new Vertex(-0.5f, -0.5f,  0.5f,  0.0f, 0.0f),
-            new Vertex(-0.5f, -0.5f, -0.5f,  0.0f, 1.0f),
-
-            new Vertex(-0.5f,  0.5f, -0.5f,  0.0f, 1.0f),
-            new Vertex( 0.5f,  0.5f, -0.5f,  1.0f, 1.0f),
-            new Vertex( 0.5f,  0.5f,  0.5f,  1.0f, 0.0f),
-            new Vertex( 0.5f,  0.5f,  0.5f,  1.0f, 0.0f),
-            new Vertex(-0.5f,  0.5f,  0.5f,  0.0f, 0.0f),
-            new Vertex(-0.5f,  0.5f, -0.5f,  0.0f, 1.0f)
-        };
-        uint[] indices = {  // note that we start from 0!
-            0, 1, 3,   // first triangle
-            3, 4, 5,    // second triangle
-            6,7,8,9,10,11,12,13,14,15,16,17
-        };
-        Shader boxShader;
         Shader lightShader;
 
         Texture paperTex, woodTex;
@@ -71,14 +24,11 @@ namespace Maelstrom_Engine {
 
         float time = 0;
 
-        Mesh box1, box2;
-        Model cat;
+        Model nanoSuit;
 
-        Transform box1Transform, catTransform;
-        Material box1Material, catMaterial;
+        Transform nanoSuitTransform;
 
-        private readonly Vector3 lightPos = new Vector3(1.2f, 1.0f, 2.0f);
-
+        private readonly Vector3 lightPos = new Vector3(1.2f, 1.0f, 2.0f);        
 
         public Game(int width, int height, string title)
             : base(width,
@@ -114,8 +64,7 @@ namespace Maelstrom_Engine {
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            box1.Render(box1Transform, camera, box1Material);
-            cat.Render(catTransform, camera, catMaterial);
+            nanoSuit.Render(nanoSuitTransform, camera);
 
             SwapBuffers();
 
@@ -138,26 +87,22 @@ namespace Maelstrom_Engine {
 
             GL.Enable(EnableCap.DepthTest);
 
-            boxShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
+            defaultDiffuseShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
             lightShader = new Shader("Shaders/light_shader.vert", "Shaders/light_shader.frag");
 
-            paperTex = new Texture("Assets/stained_paper_texture.jpg");
-            woodTex = new Texture("Assets/wood_texture.jpg");
+            paperTex = Texture.LoadTextureFromPath("Assets/stained_paper_texture.jpg");
+            woodTex = Texture.LoadTextureFromPath("Assets/wood_texture.jpg");
 
-            box1 = new Mesh(vertices, indices);
-            box1Transform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(1, 1, 1));
-            box1Material = new Material(new List<Texture>() { paperTex }, boxShader);
+            nanoSuitTransform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f));
 
-            catTransform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f));
-            catMaterial = new Material(new List<Texture>(), lightShader);
-            cat = new Model("cat.obj");
+            nanoSuit = new Model("scene.fbx");
             camera = new Camera(this);
 
             base.OnLoad(e);
         }
 
         protected override void OnUnload(EventArgs e) {
-            boxShader.Dispose();
+            defaultDiffuseShader.Dispose();
             GL.DeleteTexture(paperTex.Handle);
             GL.DeleteTexture(woodTex.Handle);
 

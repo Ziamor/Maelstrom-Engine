@@ -25,12 +25,18 @@ namespace Maelstrom_Engine
 
         GameWindow parentWindow;
 
+        bool enableMouseLook = true;
+
         public Camera(GameWindow parentWindow) {
             this.parentWindow = parentWindow;
         }
 
         public void Update(float deltaTime, KeyboardState input, MouseState mouse)
         {
+            if (input.IsKeyDown(Key.Q)) {
+                enableMouseLook = !enableMouseLook;
+            }
+
             if (input.IsKeyDown(Key.W))
             {
                 position += front * speed * deltaTime; //Forward 
@@ -71,13 +77,15 @@ namespace Maelstrom_Engine
             float deltaY = mouse.Y - lastPos.Y;
             lastPos = new Vector2(mouse.X, mouse.Y);
 
-            yaw += deltaX * mouseSensitivity;
-            pitch -= deltaY * mouseSensitivity;
+            if (enableMouseLook) {
+                yaw += deltaX * mouseSensitivity;
+                pitch -= deltaY * mouseSensitivity;
 
-            front.X = (float)Math.Cos(MathHelper.DegreesToRadians(pitch)) * (float)Math.Cos(MathHelper.DegreesToRadians(yaw));
-            front.Y = (float)Math.Sin(MathHelper.DegreesToRadians(pitch));
-            front.Z = (float)Math.Cos(MathHelper.DegreesToRadians(pitch)) * (float)Math.Sin(MathHelper.DegreesToRadians(yaw));
-            front = Vector3.Normalize(front);
+                front.X = (float)Math.Cos(MathHelper.DegreesToRadians(pitch)) * (float)Math.Cos(MathHelper.DegreesToRadians(yaw));
+                front.Y = (float)Math.Sin(MathHelper.DegreesToRadians(pitch));
+                front.Z = (float)Math.Cos(MathHelper.DegreesToRadians(pitch)) * (float)Math.Sin(MathHelper.DegreesToRadians(yaw));
+                front = Vector3.Normalize(front);
+            }
         }
 
         public Matrix4 ViewMatrix {

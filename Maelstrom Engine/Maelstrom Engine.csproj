@@ -95,6 +95,19 @@
     <None Include="Assets/**" CopyToOutputDirectory="PreserveNewest" />
     <None Include="Shaders/**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\textures\arm_dif.png" />
+    <Content Include="Assets\textures\body_dif.png" />
+    <Content Include="Assets\textures\glass_ddn.png" />
+    <Content Include="Assets\textures\glass_dif.png" />
+    <Content Include="Assets\textures\hand_dif.png" />
+    <Content Include="Assets\textures\hand_showroom_ddn.png" />
+    <Content Include="Assets\textures\hand_showroom_spec.png" />
+    <Content Include="Assets\textures\helmet_dif.png" />
+    <Content Include="Assets\textures\helmet_showroom_ddn.png" />
+    <Content Include="Assets\textures\leg_dif.png" />
+    <Content Include="Assets\textures\leg_showroom_ddn.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

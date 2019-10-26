@@ -14,10 +14,12 @@ namespace Maelstrom_Engine {
     public class Mesh {
         Vertex[] vertices;
         uint[] indices;
+        Material material;
 
-        public Mesh(Vertex[] vertices, uint[] indices) {
+        public Mesh(Vertex[] vertices, uint[] indices, Material material) {
             this.vertices = vertices;
             this.indices = indices;
+            this.material = material;
 
             InitMesh();
         }
@@ -28,7 +30,7 @@ namespace Maelstrom_Engine {
 
         public int EBO { get; private set; }
 
-        public void Render(Transform transform, Camera camera, Material material) {
+        public void Render(Transform transform, Camera camera) {
             Matrix4 modelMatrix = Matrix4.CreateRotationX(transform.rotation.X);
             modelMatrix *= Matrix4.CreateRotationY(transform.rotation.Y);
             modelMatrix *= Matrix4.CreateRotationZ(transform.rotation.Z);
