@@ -7,53 +7,61 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
+using Assimp;
+using System.Reflection;
+using System.IO;
+using Assimp.Configs;
 
 namespace Maelstrom_Engine {
     class Game : GameWindow {
-        float[] vertices = {
-            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-             0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        Vertex[] vertices = {
+            new Vertex(-0.5f, -0.5f, -0.5f,  0.0f, 0.0f),
+            new Vertex( 0.5f, -0.5f, -0.5f,  1.0f, 0.0f),
+            new Vertex(0.5f,  0.5f, -0.5f,  1.0f, 1.0f),
+            new Vertex( 0.5f,  0.5f, -0.5f,  1.0f, 1.0f),
+            new Vertex(-0.5f,  0.5f, -0.5f,  0.0f, 1.0f),
+            new Vertex( -0.5f, -0.5f, -0.5f,  0.0f, 0.0f),
 
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            new Vertex(-0.5f, -0.5f,  0.5f,  0.0f, 0.0f),
+            new Vertex( 0.5f, -0.5f,  0.5f,  1.0f, 0.0f),
+            new Vertex( 0.5f,  0.5f,  0.5f,  1.0f, 1.0f),
+            new Vertex( 0.5f,  0.5f,  0.5f,  1.0f, 1.0f),
+            new Vertex(-0.5f,  0.5f,  0.5f,  0.0f, 1.0f),
+            new Vertex(-0.5f, -0.5f,  0.5f,  0.0f, 0.0f),
 
-            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            new Vertex( -0.5f,  0.5f,  0.5f,  1.0f, 0.0f),
+            new Vertex(-0.5f,  0.5f, -0.5f,  1.0f, 1.0f),
+            new Vertex(-0.5f, -0.5f, -0.5f,  0.0f, 1.0f),
+            new Vertex(-0.5f, -0.5f, -0.5f,  0.0f, 1.0f),
+            new Vertex(-0.5f, -0.5f,  0.5f,  0.0f, 0.0f),
+            new Vertex(-0.5f,  0.5f,  0.5f,  1.0f, 0.0f),
 
-             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            new Vertex( 0.5f,  0.5f,  0.5f,  1.0f, 0.0f),
+            new Vertex(0.5f,  0.5f, -0.5f,  1.0f, 1.0f),
+            new Vertex( 0.5f, -0.5f, -0.5f,  0.0f, 1.0f),
+            new Vertex( 0.5f, -0.5f, -0.5f,  0.0f, 1.0f),
+            new Vertex( 0.5f, -0.5f,  0.5f,  0.0f, 0.0f),
+            new Vertex(0.5f,  0.5f,  0.5f,  1.0f, 0.0f),
 
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-             0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            new Vertex(-0.5f, -0.5f, -0.5f,  0.0f, 1.0f),
+            new Vertex( 0.5f, -0.5f, -0.5f,  1.0f, 1.0f),
+            new Vertex( 0.5f, -0.5f,  0.5f,  1.0f, 0.0f),
+            new Vertex( 0.5f, -0.5f,  0.5f,  1.0f, 0.0f),
+            new Vertex(-0.5f, -0.5f,  0.5f,  0.0f, 0.0f),
+            new Vertex(-0.5f, -0.5f, -0.5f,  0.0f, 1.0f),
 
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+            new Vertex(-0.5f,  0.5f, -0.5f,  0.0f, 1.0f),
+            new Vertex( 0.5f,  0.5f, -0.5f,  1.0f, 1.0f),
+            new Vertex( 0.5f,  0.5f,  0.5f,  1.0f, 0.0f),
+            new Vertex( 0.5f,  0.5f,  0.5f,  1.0f, 0.0f),
+            new Vertex(-0.5f,  0.5f,  0.5f,  0.0f, 0.0f),
+            new Vertex(-0.5f,  0.5f, -0.5f,  0.0f, 1.0f)
         };
-
+        uint[] indices = {  // note that we start from 0!
+            0, 1, 3,   // first triangle
+            3, 4, 5,    // second triangle
+            6,7,8,9,10,11,12,13,14,15,16,17
+        };
         Shader boxShader;
         Shader lightShader;
 
@@ -64,10 +72,13 @@ namespace Maelstrom_Engine {
         float time = 0;
 
         Mesh box1, box2;
-        Transform box1Transform, box2Transform;
-        Material box1Material, box2Material;
+        Model cat;
+
+        Transform box1Transform, catTransform;
+        Material box1Material, catMaterial;
 
         private readonly Vector3 lightPos = new Vector3(1.2f, 1.0f, 2.0f);
+
 
         public Game(int width, int height, string title)
             : base(width,
@@ -103,36 +114,8 @@ namespace Maelstrom_Engine {
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            /*GL.BindVertexArray(boxVAO);
-
-            paperTex.Use(TextureUnit.Texture0);
-            woodTex.Use(TextureUnit.Texture1);
-
-            boxShader.Use();
-
-            Matrix4 model = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(time));
-
-            boxShader.SetMatrix4("model", model);
-            boxShader.SetMatrix4("view", view);
-            boxShader.SetMatrix4("projection", projection);
-
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
-
-            //GL.BindVertexArray(lampVAO);
-
-            lightShader.Use();
-
-            Matrix4 lampMatrix = Matrix4.Identity;
-            lampMatrix *= Matrix4.CreateScale(0.2f);
-            lampMatrix *= Matrix4.CreateTranslation(lightPos);
-
-            lightShader.SetMatrix4("model", lampMatrix);
-            lightShader.SetMatrix4("view", camera.ViewMatrix);
-            lightShader.SetMatrix4("projection", projection);
-
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);*/
             box1.Render(box1Transform, camera, box1Material);
-            box2.Render(box2Transform, camera, box2Material);
+            cat.Render(catTransform, camera, catMaterial);
 
             SwapBuffers();
 
@@ -154,21 +137,20 @@ namespace Maelstrom_Engine {
             GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
             GL.Enable(EnableCap.DepthTest);
-                       
+
             boxShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
             lightShader = new Shader("Shaders/light_shader.vert", "Shaders/light_shader.frag");
 
             paperTex = new Texture("Assets/stained_paper_texture.jpg");
             woodTex = new Texture("Assets/wood_texture.jpg");
 
-            box1 = new Mesh(vertices);
+            box1 = new Mesh(vertices, indices);
             box1Transform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(1, 1, 1));
             box1Material = new Material(new List<Texture>() { paperTex }, boxShader);
 
-            box2 = new Mesh(vertices);
-            box2Transform = new Transform(new Vector3(2, 2, 2), new Vector3(0, 0, 0), new Vector3(.2f, .2f, .2f));
-            box2Material = new Material(new List<Texture>(), lightShader);
-
+            catTransform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f));
+            catMaterial = new Material(new List<Texture>(), lightShader);
+            cat = new Model("cat.obj");
             camera = new Camera(this);
 
             base.OnLoad(e);
