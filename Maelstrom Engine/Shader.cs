@@ -117,7 +117,7 @@ namespace Maelstrom_Engine
 
         ~Shader()
         {
-            GL.DeleteProgram(Handle);
+            Dispose(true);
         }
 
         public void Dispose()

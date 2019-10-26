@@ -11,7 +11,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
 namespace Maelstrom_Engine {
-    public class Texture {
+    public class Texture : IDisposable {
         public readonly int Handle;
 
         private Texture() {
@@ -67,5 +67,25 @@ namespace Maelstrom_Engine {
 
             return null;
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                GL.DeleteTexture(Handle);
+                disposedValue = true;
+            }
+        }
+
+        ~Texture() {
+            //Dispose(true);
+        }
+
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

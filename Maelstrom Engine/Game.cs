@@ -18,8 +18,6 @@ namespace Maelstrom_Engine {
 
         Shader lightShader;
 
-        Texture paperTex, woodTex;
-
         Camera camera;
 
         float time = 0;
@@ -90,9 +88,6 @@ namespace Maelstrom_Engine {
             defaultDiffuseShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
             lightShader = new Shader("Shaders/light_shader.vert", "Shaders/light_shader.frag");
 
-            paperTex = Texture.LoadTextureFromPath("Assets/stained_paper_texture.jpg");
-            woodTex = Texture.LoadTextureFromPath("Assets/wood_texture.jpg");
-
             nanoSuitTransform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f));
 
             nanoSuit = new Model("scene.fbx");
@@ -103,8 +98,6 @@ namespace Maelstrom_Engine {
 
         protected override void OnUnload(EventArgs e) {
             defaultDiffuseShader.Dispose();
-            GL.DeleteTexture(paperTex.Handle);
-            GL.DeleteTexture(woodTex.Handle);
 
             lightShader.Dispose();
 
