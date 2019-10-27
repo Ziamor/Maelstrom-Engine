@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Maelstrom_Engine {
-    public class Model {
+    public class Model : Renderable {
         List<Mesh> meshes;
 
         public Model(string fileName) {
@@ -23,6 +23,12 @@ namespace Maelstrom_Engine {
         public void Render(Transform transform, Camera camera) {
             for (int i = 0; i < meshes.Count; i++) {
                 meshes[i].Render(transform, camera);
+            }
+        }
+
+        public void OverrideMaterial(Material newMaterial) {
+            for (int i = 0; i < meshes.Count; i++) {
+                meshes[i].Material = newMaterial;
             }
         }
 

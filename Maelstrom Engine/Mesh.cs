@@ -11,15 +11,16 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 
 namespace Maelstrom_Engine {
-    public class Mesh {
+    public class Mesh : Renderable {
         Vertex[] vertices;
         uint[] indices;
-        Material material;
+
+        public Material Material { get; set; }
 
         public Mesh(Vertex[] vertices, uint[] indices, Material material) {
             this.vertices = vertices;
             this.indices = indices;
-            this.material = material;
+            this.Material = material;
 
             InitMesh();
         }
@@ -38,11 +39,15 @@ namespace Maelstrom_Engine {
             modelMatrix *= Matrix4.CreateScale(transform.scale);
             modelMatrix *= Matrix4.CreateTranslation(transform.position);
 
-            material.Use();
+            Matrix4 normalMatrix = modelMatrix.Inverted();
+            normalMatrix.Transpose();
 
-            material.shader.SetMatrix4("model", modelMatrix);
-            material.shader.SetMatrix4("view", camera.ViewMatrix);
-            material.shader.SetMatrix4("projection", camera.ProjectionMatrix);
+            Material.Use();
+
+            Material.shader.SetMatrix4("model", modelMatrix);
+            Material.shader.SetMatrix4("view", camera.ViewMatrix);
+            Material.shader.SetMatrix4("projection", camera.ProjectionMatrix);
+            Material.shader.SetMatrix4("normalMat", normalMatrix);
 
             GL.BindVertexArray(VAO);
             GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);

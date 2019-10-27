@@ -10,11 +10,11 @@ using OpenTK.Input;
 
 namespace Maelstrom_Engine {
     public class Material {
-        List<Texture> textures;
+        List<Texture> diffusetextures;
         public Shader shader { get; private set; }
 
         public Material(List<Texture> textures, Shader shader) {
-            this.textures = textures;
+            this.diffusetextures = textures;
             this.shader = shader;
 
             Init();
@@ -22,14 +22,14 @@ namespace Maelstrom_Engine {
 
         private void Init() {
             //TODO this wont work for multi texture as it will bind to the same texture uniform
-            foreach (Texture texture in textures) {
+            foreach (Texture texture in diffusetextures) {
                 shader.SetInt("texture0", 0);
             }
         }
 
         public void Use() {
             //TODO this wont work for multi texture as it will bind to the same texture unit
-            foreach (Texture texture in textures) {
+            foreach (Texture texture in diffusetextures) {
                 texture.Use();
             }
 

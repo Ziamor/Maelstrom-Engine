@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using OpenTK;
 namespace Maelstrom_Engine {
     public class Transform {
-        public Vector3 position { get; private set; }
-        public Vector3 rotation { get; private set; }
-        public Vector3 scale { get; private set; }
+        public Vector3 position { get; set; }
+        public Vector3 rotation { get; set; }
+        public Vector3 scale { get; set; }
         public Transform(Vector3 position, Vector3 rotation, Vector3 scale) {
             this.position = position;
             this.rotation = rotation;

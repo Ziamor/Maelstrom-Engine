@@ -88,12 +88,25 @@ namespace Maelstrom_Engine {
         }
 
         internal void SetMatrix4(string name, Matrix4 matrix) {
-            GL.UseProgram(Handle);
-            GL.UniformMatrix4(uniformLocations[name], true, ref matrix);
+            int location;
+            if (uniformLocations.TryGetValue(name, out location)) {
+                GL.UseProgram(Handle);
+                GL.UniformMatrix4(location, true, ref matrix);
+            }
+        }
+
+        internal void SetVec3(string name, Vector3 vec3) {
+            int location;
+            if (uniformLocations.TryGetValue(name, out location)) {
+                GL.ProgramUniform3(Handle, location, ref vec3);
+            }
         }
 
         internal void SetVec4(string name, Vector4 vec4) {
-            GL.ProgramUniform4(Handle, uniformLocations[name], ref vec4);
+            int location;
+            if (uniformLocations.TryGetValue(name, out location)) {
+                GL.ProgramUniform4(Handle, location, ref vec4);
+            }
         }
 
         #region IDisposable Support

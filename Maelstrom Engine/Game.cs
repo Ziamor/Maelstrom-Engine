@@ -15,18 +15,18 @@ using Assimp.Configs;
 namespace Maelstrom_Engine {
     class Game : GameWindow {
         public static Shader defaultDiffuseShader;
-
-        Shader lightShader;
+        public static Shader defaultLightShader;
 
         Camera camera;
 
         float time = 0;
 
         Model nanoSuit, axe, lamp;
+        Light light;
 
-        Transform nanoSuitTransform, axeTransform, lampTransform;
+        Transform nanoSuitTransform, axeTransform;
 
-        private readonly Vector3 lightPos = new Vector3(1.2f, 1.0f, 2.0f);        
+        private readonly Vector3 lightPos = new Vector3(1.2f, 1.0f, 2.0f);
 
         public Game(int width, int height, string title)
             : base(width,
@@ -51,7 +51,7 @@ namespace Maelstrom_Engine {
                 Exit();
             }
 
-            nanoSuitTransform = new Transform(new Vector3(0, 0, -1), new Vector3(0, time, 0), new Vector3(0.05f, 0.05f, 0.05f));
+            light.Update(deltaTime);
 
             camera.Update(deltaTime, keyState, mouse);
 
@@ -64,11 +64,13 @@ namespace Maelstrom_Engine {
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+            light.Render(null, camera);
+
             defaultDiffuseShader.SetVec4("lightColor", new Vector4(1f, .9f, .8f, 1));
+            defaultDiffuseShader.SetVec3("lightPos", light.transform.position);
 
             nanoSuit.Render(nanoSuitTransform, camera);
             axe.Render(axeTransform, camera);
-            lamp.Render(lampTransform, camera);
 
             SwapBuffers();
 
@@ -87,20 +89,19 @@ namespace Maelstrom_Engine {
         protected override void OnLoad(EventArgs e) {
             CursorVisible = false;
 
-            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-
+            GL.ClearColor(13 / 256f, 16 / 256f, 28 / 256f, 1.0f);
             GL.Enable(EnableCap.DepthTest);
 
             defaultDiffuseShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
-            lightShader = new Shader("Shaders/light_shader.vert", "Shaders/light_shader.frag");
+            defaultLightShader = new Shader("Shaders/light_shader.vert", "Shaders/light_shader.frag");
 
-            nanoSuitTransform = new Transform(new Vector3(0, 0, -1), new Vector3(0, 45, 0), new Vector3(0.05f, 0.05f, 0.05f));
-            axeTransform = new Transform(new Vector3(1, 0, 0), new Vector3(0, 0, 0), new Vector3(1f, 1f, 1f));
-            lampTransform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0.01f, 0.01f, 0.01f));
+            light = new Light();
+
+            nanoSuitTransform = new Transform(new Vector3(0, 0, -10), new Vector3(0, 45, 0), new Vector3(1f, 1f, 1f));
+            axeTransform = new Transform(new Vector3(10, 0, 0), new Vector3(-90, 0, 45), new Vector3(10f, 10f, 10f));
 
             nanoSuit = new Model("scene.fbx");
             axe = new Model("Viking_Axe_Straight.fbx");
-            lamp = new Model("lamp.obj");
 
             camera = new Camera(this);
 
@@ -110,7 +111,7 @@ namespace Maelstrom_Engine {
         protected override void OnUnload(EventArgs e) {
             defaultDiffuseShader.Dispose();
 
-            lightShader.Dispose();
+            defaultLightShader.Dispose();
 
             base.OnUnload(e);
         }

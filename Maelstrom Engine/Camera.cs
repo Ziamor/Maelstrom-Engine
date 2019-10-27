@@ -10,7 +10,7 @@ namespace Maelstrom_Engine
 {
     public class Camera
     {
-        public float speed = 5f;
+        public float speed = 10f;
         public float mouseSensitivity = 0.05f;
 
         float yaw = 270, pitch;

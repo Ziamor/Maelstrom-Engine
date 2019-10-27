@@ -11,6 +11,7 @@ out vec3 worldPos;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 normalMat;
 
 void main(void)
 {
@@ -18,5 +19,5 @@ void main(void)
 	worldPos = vec3(vec4(aPosition, 1.0) * model);
 
     texCoord = aTexCoord;
-	normal = normalize(aNormal * mat3(transpose(inverse(model))));
+	normal = normalize(aNormal * mat3(normalMat));
 }
