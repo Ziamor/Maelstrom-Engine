@@ -51,18 +51,22 @@ namespace Maelstrom_Engine {
                 Exit();
             }
 
+            nanoSuitTransform = new Transform(new Vector3(0, 0, -1), new Vector3(0, time, 0), new Vector3(0.05f, 0.05f, 0.05f));
+
             camera.Update(deltaTime, keyState, mouse);
 
             base.OnUpdateFrame(e);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e) {
-            time += (float)e.Time * 25f;
+            time += (float)e.Time;
             Title = $"(Vsync: {VSync}) FPS: {1f / e.Time:0}";
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            //nanoSuit.Render(nanoSuitTransform, camera);
+            defaultDiffuseShader.SetVec4("lightColor", new Vector4(1f, .9f, .8f, 1));
+
+            nanoSuit.Render(nanoSuitTransform, camera);
             axe.Render(axeTransform, camera);
             lamp.Render(lampTransform, camera);
 
@@ -90,13 +94,13 @@ namespace Maelstrom_Engine {
             defaultDiffuseShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
             lightShader = new Shader("Shaders/light_shader.vert", "Shaders/light_shader.frag");
 
-            nanoSuitTransform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0.05f, 0.05f, 0.05f));
-            axeTransform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(1f, 1f, 1f));
+            nanoSuitTransform = new Transform(new Vector3(0, 0, -1), new Vector3(0, 45, 0), new Vector3(0.05f, 0.05f, 0.05f));
+            axeTransform = new Transform(new Vector3(1, 0, 0), new Vector3(0, 0, 0), new Vector3(1f, 1f, 1f));
             lampTransform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(0.01f, 0.01f, 0.01f));
 
-            //nanoSuit = new Model("scene.fbx");
-            lamp = new Model("lamp.obj");
+            nanoSuit = new Model("scene.fbx");
             axe = new Model("Viking_Axe_Straight.fbx");
+            lamp = new Model("lamp.obj");
 
             camera = new Camera(this);
 

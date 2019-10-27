@@ -75,19 +75,30 @@ namespace Maelstrom_Engine {
 
         private Vertex[] ProcessVerticies(Assimp.Mesh assImpMesh) {
             List<Assimp.Vector3D> assImpMeshVertices = assImpMesh.Vertices;
+            List<Assimp.Vector3D> assImpMeshNormals = assImpMesh.Normals;
             List<Assimp.Vector3D>[] assImpMeshTextureCoords = assImpMesh.TextureCoordinateChannels;
 
             Vertex[] vertices = new Vertex[assImpMeshVertices.Count];
             for (int i = 0; i < assImpMeshVertices.Count; i++) {
                 Assimp.Vector3D position = assImpMeshVertices[i];
-                Vertex vertex = new Vertex(position.X, position.Y, position.Z, 0, 0);
+                Vector3 pos = new Vector3(position.X, position.Y, position.Z);
+                Vector3 normals = new Vector3(0, 0, 0);
+                Vector2 texCoords = new Vector2(0, 0);
 
-                if (assImpMesh.HasTextureCoords(0)) {
-                    Assimp.Vector3D texCoords = assImpMeshTextureCoords[0][i];
-                    vertex.TextureCoord = new Vector2(texCoords.X, texCoords.Y);
+                if (assImpMesh.HasNormals) {
+                    Assimp.Vector3D assImpMeshNormal = assImpMeshNormals[i];
+                    normals.X = assImpMeshNormal.X;
+                    normals.Y = assImpMeshNormal.Y;
+                    normals.Z = assImpMeshNormal.Z;
                 }
 
-                vertices[i] = vertex;
+                if (assImpMesh.HasTextureCoords(0)) {
+                    Assimp.Vector3D assImpMeshTexCoord = assImpMeshTextureCoords[0][i];
+                    texCoords.X = assImpMeshTexCoord.X;
+                    texCoords.Y = assImpMeshTexCoord.Y;
+                }
+
+                vertices[i] = new Vertex(pos, normals, texCoords);
             }
 
             return vertices;
@@ -117,7 +128,8 @@ namespace Maelstrom_Engine {
                     int embeddedTextureIndex = int.Parse(textureSlot.FilePath.TrimStart('*'));
                     Assimp.EmbeddedTexture tex = scene.Textures[embeddedTextureIndex];
                     textures.Add(Texture.LoadTextureFromEmbeddedTexture(tex));
-                } else {
+                }
+                else {
                     textures.Add(Texture.LoadTextureFromPath("Assets\\" + Path.GetFileName(textureSlot.FilePath)));
                 }
             }

@@ -7,26 +7,21 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 
-namespace Maelstrom_Engine
-{
-    public class Shader : IDisposable
-    {
+namespace Maelstrom_Engine {
+    public class Shader : IDisposable {
         public readonly int Handle;
         private readonly Dictionary<string, int> uniformLocations;
 
-        public Shader(string vertexPath, string fragmentPath)
-        {
+        public Shader(string vertexPath, string fragmentPath) {
             string VertexShaderSource;
 
-            using (StreamReader reader = new StreamReader(vertexPath, Encoding.UTF8))
-            {
+            using (StreamReader reader = new StreamReader(vertexPath, Encoding.UTF8)) {
                 VertexShaderSource = reader.ReadToEnd();
             }
 
             string FragmentShaderSource;
 
-            using (StreamReader reader = new StreamReader(fragmentPath, Encoding.UTF8))
-            {
+            using (StreamReader reader = new StreamReader(fragmentPath, Encoding.UTF8)) {
                 FragmentShaderSource = reader.ReadToEnd();
             }
 
@@ -66,8 +61,7 @@ namespace Maelstrom_Engine
             uniformLocations = new Dictionary<string, int>();
 
             // Loop over all the uniforms,
-            for (var i = 0; i < numberOfUniforms; i++)
-            {
+            for (var i = 0; i < numberOfUniforms; i++) {
                 // get the name of this uniform,
                 var key = GL.GetActiveUniform(Handle, i, out _, out _);
 
@@ -79,49 +73,45 @@ namespace Maelstrom_Engine
             }
         }
 
-        public void Use()
-        {
+        public void Use() {
             GL.UseProgram(Handle);
         }
 
-        public int GetAttribLocation(string attribName)
-        {
+        public int GetAttribLocation(string attribName) {
             return GL.GetAttribLocation(Handle, attribName);
         }
 
-        public void SetInt(string name, int value)
-        {
+        public void SetInt(string name, int value) {
             int location = GL.GetUniformLocation(Handle, name);
 
             GL.Uniform1(location, value);
         }
 
-        internal void SetMatrix4(string name, Matrix4 matrix)
-        {
+        internal void SetMatrix4(string name, Matrix4 matrix) {
             GL.UseProgram(Handle);
             GL.UniformMatrix4(uniformLocations[name], true, ref matrix);
+        }
+
+        internal void SetVec4(string name, Vector4 vec4) {
+            GL.ProgramUniform4(Handle, uniformLocations[name], ref vec4);
         }
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
                 GL.DeleteProgram(Handle);
 
                 disposedValue = true;
             }
         }
 
-        ~Shader()
-        {
+        ~Shader() {
             Dispose(true);
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
         }

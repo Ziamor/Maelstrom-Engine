@@ -65,9 +65,13 @@ namespace Maelstrom_Engine {
             GL.EnableVertexAttribArray(vertexLocation);
             GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, Marshal.SizeOf(typeof(Vertex)), 0);
 
-            int texCoordLocation = 1;
+            int normalLocation = 1;
+            GL.EnableVertexAttribArray(normalLocation);
+            GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, Marshal.SizeOf(typeof(Vertex)), Marshal.SizeOf(typeof(Vector3)));
+
+            int texCoordLocation = 2;
             GL.EnableVertexAttribArray(texCoordLocation);
-            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, Marshal.SizeOf(typeof(Vertex)), Marshal.SizeOf(typeof(Vector3)));
+            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, Marshal.SizeOf(typeof(Vertex)), Marshal.SizeOf(typeof(Vector3)) * 2);
 
             GL.BindVertexArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -78,16 +82,13 @@ namespace Maelstrom_Engine {
     [StructLayout(LayoutKind.Sequential)]
     public struct Vertex {
         public Vector3 Position;
+        public Vector3 Normal;
         public Vector2 TextureCoord;
 
-        public Vertex(Vector3 position, Vector2 textureCoord) {
+        public Vertex(Vector3 position, Vector3 normal, Vector2 textureCoord) {
             Position = position;
+            Normal = normal;
             TextureCoord = textureCoord;
-        }
-
-        public Vertex(float x, float y, float z, float u, float v) {
-            Position = new Vector3(x, y, z);
-            TextureCoord = new Vector2(u, v);
         }
     }
 }
