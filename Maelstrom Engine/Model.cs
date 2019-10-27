@@ -82,6 +82,7 @@ namespace Maelstrom_Engine {
         private Vertex[] ProcessVerticies(Assimp.Mesh assImpMesh) {
             List<Assimp.Vector3D> assImpMeshVertices = assImpMesh.Vertices;
             List<Assimp.Vector3D> assImpMeshNormals = assImpMesh.Normals;
+            List<Assimp.Vector3D> assImpMeshTangents = assImpMesh.Tangents;
             List<Assimp.Vector3D>[] assImpMeshTextureCoords = assImpMesh.TextureCoordinateChannels;
 
             Vertex[] vertices = new Vertex[assImpMeshVertices.Count];
@@ -89,6 +90,7 @@ namespace Maelstrom_Engine {
                 Assimp.Vector3D position = assImpMeshVertices[i];
                 Vector3 pos = new Vector3(position.X, position.Y, position.Z);
                 Vector3 normals = new Vector3(0, 0, 0);
+                Vector3 tangent = new Vector3(0, 0, 0);
                 Vector2 texCoords = new Vector2(0, 0);
 
                 if (assImpMesh.HasNormals) {
@@ -98,13 +100,20 @@ namespace Maelstrom_Engine {
                     normals.Z = assImpMeshNormal.Z;
                 }
 
+                if (assImpMesh.HasTangentBasis) {
+                    Assimp.Vector3D assImpMeshTangent = assImpMeshTangents[i];
+                    tangent.X = assImpMeshTangent.X;
+                    tangent.Y = assImpMeshTangent.Y;
+                    tangent.Z = assImpMeshTangent.Z;
+                }
+
                 if (assImpMesh.HasTextureCoords(0)) {
                     Assimp.Vector3D assImpMeshTexCoord = assImpMeshTextureCoords[0][i];
                     texCoords.X = assImpMeshTexCoord.X;
                     texCoords.Y = assImpMeshTexCoord.Y;
                 }
 
-                vertices[i] = new Vertex(pos, normals, texCoords);
+                vertices[i] = new Vertex(pos, normals, tangent, texCoords);
             }
 
             return vertices;
@@ -124,23 +133,39 @@ namespace Maelstrom_Engine {
         }
 
         private Material ProcessMaterials(Assimp.Mesh assImpMesh, Scene scene) {
-            List<Texture> textures = new List<Texture>();
             Assimp.Material assImpMeshMaterial = scene.Materials[assImpMesh.MaterialIndex];
-            TextureSlot[] textureSlots = assImpMeshMaterial.GetMaterialTextures(TextureType.Diffuse);
-            for (int i = 0; i < textureSlots.Length; i++) {
-                TextureSlot textureSlot = textureSlots[i];
-                // FBX files store the file name as the character * followed by a number the represents the index for an embedded texture
-                if (Regex.IsMatch(textureSlot.FilePath, @"\*\d+")) {
-                    int embeddedTextureIndex = int.Parse(textureSlot.FilePath.TrimStart('*'));
-                    Assimp.EmbeddedTexture tex = scene.Textures[embeddedTextureIndex];
-                    textures.Add(Texture.LoadTextureFromEmbeddedTexture(tex));
-                }
-                else {
-                    textures.Add(Texture.LoadTextureFromPath("Assets\\" + Path.GetFileName(textureSlot.FilePath)));
-                }
-            }
-            Material material = new Material(textures, Game.defaultDiffuseShader);
+            Texture diffuse = ProcessTexture(TextureType.Diffuse, scene, assImpMeshMaterial);
+            Texture normalMap = ProcessTexture(TextureType.Height, scene, assImpMeshMaterial);
+
+            Material material = new Material(diffuse, normalMap, Game.defaultDiffuseShader);
             return material;
+        }
+
+        private static Texture ProcessTexture(TextureType textureType, Scene scene, Assimp.Material assImpMeshMaterial) {
+            Texture texture;
+            TextureSlot textureSlot;
+            assImpMeshMaterial.GetMaterialTexture(textureType, 0, out textureSlot);
+
+            if (textureSlot.FilePath == null)
+                return null;
+            texture = LoadTexture(scene, textureSlot);
+
+            return texture;
+        }
+
+        private static Texture LoadTexture(Scene scene, TextureSlot textureSlot) {
+            Texture diffuse;
+            // For FBX, textures can be embedded and have a filepath value in the format * followed by a number which is the index for the texture in the scene
+            if (Regex.IsMatch(textureSlot.FilePath, @"\*\d+")) {
+                int embeddedTextureIndex = int.Parse(textureSlot.FilePath.TrimStart('*'));
+                Assimp.EmbeddedTexture tex = scene.Textures[embeddedTextureIndex];
+                diffuse = Texture.LoadTextureFromEmbeddedTexture(tex);
+            }
+            else {
+                diffuse = Texture.LoadTextureFromPath("Assets\\" + Path.GetFileName(textureSlot.FilePath));
+            }
+
+            return diffuse;
         }
     }
 }

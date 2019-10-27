@@ -66,17 +66,23 @@ namespace Maelstrom_Engine {
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, EBO);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 
+            int vertexSize = Marshal.SizeOf(typeof(Vertex));
+
             int vertexLocation = 0;
             GL.EnableVertexAttribArray(vertexLocation);
-            GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, Marshal.SizeOf(typeof(Vertex)), 0);
+            GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, vertexSize, 0);
 
             int normalLocation = 1;
             GL.EnableVertexAttribArray(normalLocation);
-            GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, Marshal.SizeOf(typeof(Vertex)), Marshal.SizeOf(typeof(Vector3)));
+            GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, vertexSize, Marshal.SizeOf(typeof(Vector3)));
 
-            int texCoordLocation = 2;
+            int tangentLocation = 2;
+            GL.EnableVertexAttribArray(tangentLocation);
+            GL.VertexAttribPointer(tangentLocation, 3, VertexAttribPointerType.Float, false, vertexSize, Marshal.SizeOf(typeof(Vector3)) * 2);
+
+            int texCoordLocation = 3;
             GL.EnableVertexAttribArray(texCoordLocation);
-            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, Marshal.SizeOf(typeof(Vertex)), Marshal.SizeOf(typeof(Vector3)) * 2);
+            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, vertexSize, Marshal.SizeOf(typeof(Vector3)) * 3);
 
             GL.BindVertexArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -88,11 +94,13 @@ namespace Maelstrom_Engine {
     public struct Vertex {
         public Vector3 Position;
         public Vector3 Normal;
+        public Vector3 Tangent;
         public Vector2 TextureCoord;
 
-        public Vertex(Vector3 position, Vector3 normal, Vector2 textureCoord) {
+        public Vertex(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoord) {
             Position = position;
             Normal = normal;
+            Tangent = tangent;
             TextureCoord = textureCoord;
         }
     }

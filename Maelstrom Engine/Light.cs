@@ -13,7 +13,7 @@ namespace Maelstrom_Engine {
         float t;
         public Light() {
             lightMesh = new Model("sphere.obj");
-            lightMesh.OverrideMaterial(new Material(new List<Texture>(), Game.defaultLightShader));
+            lightMesh.OverrideMaterial(new Material(null, null, Game.defaultLightShader));
             transform = new Transform(new Vector3(0, 0, 0), new Vector3(0, 0, 0), new Vector3(1f, 1f, 1f));
         }
 

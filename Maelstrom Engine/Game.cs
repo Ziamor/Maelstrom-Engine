@@ -21,12 +21,10 @@ namespace Maelstrom_Engine {
 
         float time = 0;
 
-        Model nanoSuit, axe, lamp;
+        Model nanoSuit, axe;
         Light light;
 
         Transform nanoSuitTransform, axeTransform;
-
-        private readonly Vector3 lightPos = new Vector3(1.2f, 1.0f, 2.0f);
 
         public Game(int width, int height, string title)
             : base(width,
@@ -51,6 +49,10 @@ namespace Maelstrom_Engine {
                 Exit();
             }
 
+            if (keyState.IsKeyDown(Key.R)) {
+                //defaultDiffuseShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
+            }
+
             light.Update(deltaTime);
 
             camera.Update(deltaTime, keyState, mouse);
@@ -70,7 +72,7 @@ namespace Maelstrom_Engine {
             defaultDiffuseShader.SetVec3("lightPos", light.transform.position);
 
             nanoSuit.Render(nanoSuitTransform, camera);
-            axe.Render(axeTransform, camera);
+            //axe.Render(axeTransform, camera);
 
             SwapBuffers();
 
@@ -100,8 +102,8 @@ namespace Maelstrom_Engine {
             nanoSuitTransform = new Transform(new Vector3(0, 0, -10), new Vector3(0, 45, 0), new Vector3(1f, 1f, 1f));
             axeTransform = new Transform(new Vector3(10, 0, 0), new Vector3(-90, 0, 45), new Vector3(10f, 10f, 10f));
 
-            nanoSuit = new Model("scene.fbx");
-            axe = new Model("Viking_Axe_Straight.fbx");
+            nanoSuit = new Model("Cyborg.obj");
+            //axe = new Model("Viking_Axe_Straight.fbx");
 
             camera = new Camera(this);
 

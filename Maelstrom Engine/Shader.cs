@@ -74,6 +74,9 @@ namespace Maelstrom_Engine {
         }
 
         public void Use() {
+            SetInt("diffuseTex", 0);
+            SetInt("normalMapTex", 1);
+
             GL.UseProgram(Handle);
         }
 
@@ -114,7 +117,12 @@ namespace Maelstrom_Engine {
 
         protected virtual void Dispose(bool disposing) {
             if (!disposedValue) {
-                GL.DeleteProgram(Handle);
+                try {
+                    GL.DeleteProgram(Handle);
+                }
+                catch (Exception e) {
+                    Console.WriteLine(e.Message);
+                }
 
                 disposedValue = true;
             }
