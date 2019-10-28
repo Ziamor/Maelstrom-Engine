@@ -76,6 +76,7 @@ namespace Maelstrom_Engine {
         public void Use() {
             SetInt("diffuseTex", 0);
             SetInt("normalMapTex", 1);
+            SetInt("specularMapTex", 2);
 
             GL.UseProgram(Handle);
         }

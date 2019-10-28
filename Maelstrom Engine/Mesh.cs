@@ -48,6 +48,7 @@ namespace Maelstrom_Engine {
             Material.shader.SetMatrix4("view", camera.ViewMatrix);
             Material.shader.SetMatrix4("projection", camera.ProjectionMatrix);
             Material.shader.SetMatrix4("normalMat", normalMatrix);
+            Material.shader.SetVec3("viewPos", camera.position);
 
             GL.BindVertexArray(VAO);
             GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);

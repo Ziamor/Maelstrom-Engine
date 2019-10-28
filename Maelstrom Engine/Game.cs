@@ -11,11 +11,15 @@ using Assimp;
 using System.Reflection;
 using System.IO;
 using Assimp.Configs;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace Maelstrom_Engine {
     class Game : GameWindow {
         public static Shader defaultDiffuseShader;
         public static Shader defaultLightShader;
+
+        public static Texture defaultSpecular;
 
         Camera camera;
 
@@ -53,7 +57,7 @@ namespace Maelstrom_Engine {
                 //defaultDiffuseShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
             }
 
-            light.Update(deltaTime);
+            //light.Update(deltaTime);
 
             camera.Update(deltaTime, keyState, mouse);
 
@@ -72,7 +76,7 @@ namespace Maelstrom_Engine {
             defaultDiffuseShader.SetVec3("lightPos", light.transform.position);
 
             nanoSuit.Render(nanoSuitTransform, camera);
-            //axe.Render(axeTransform, camera);
+            axe.Render(axeTransform, camera);
 
             SwapBuffers();
 
@@ -97,13 +101,14 @@ namespace Maelstrom_Engine {
             defaultDiffuseShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
             defaultLightShader = new Shader("Shaders/light_shader.vert", "Shaders/light_shader.frag");
 
+            defaultSpecular = Texture.CreateTexture(new Image<Rgba32>(SixLabors.ImageSharp.Configuration.Default, 1, 1, Rgba32.White));
             light = new Light();
 
             nanoSuitTransform = new Transform(new Vector3(0, 0, -10), new Vector3(0, 45, 0), new Vector3(1f, 1f, 1f));
-            axeTransform = new Transform(new Vector3(10, 0, 0), new Vector3(-90, 0, 45), new Vector3(10f, 10f, 10f));
+            axeTransform = new Transform(new Vector3(10, 0, 0), new Vector3(0, 0, 45), new Vector3(10f, 10f, 10f));
 
-            nanoSuit = new Model("Cyborg.obj");
-            //axe = new Model("Viking_Axe_Straight.fbx");
+            nanoSuit = new Model("model.dae");
+            axe = new Model("Viking_Axe_Straight.fbx");
 
             camera = new Camera(this);
 

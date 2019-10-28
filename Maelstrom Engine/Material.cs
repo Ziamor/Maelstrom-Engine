@@ -10,12 +10,13 @@ using OpenTK.Input;
 
 namespace Maelstrom_Engine {
     public class Material {
-        Texture diffuse, normalMap;
+        Texture diffuse, normalMap, specularMap;
         public Shader shader { get; private set; }
 
-        public Material(Texture diffuse, Texture normalMap, Shader shader) {
+        public Material(Texture diffuse, Texture normalMap, Texture specularMap, Shader shader) {
             this.diffuse = diffuse;
             this.normalMap = normalMap;
+            this.specularMap = specularMap;
             this.shader = shader;
         }
 
@@ -24,6 +25,8 @@ namespace Maelstrom_Engine {
                 diffuse.Use(TextureUnit.Texture0);
             if (normalMap != null)
                 normalMap.Use(TextureUnit.Texture1);
+            if (specularMap != null)
+                specularMap.Use(TextureUnit.Texture2);
 
             shader.Use();
         }

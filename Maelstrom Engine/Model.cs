@@ -100,12 +100,12 @@ namespace Maelstrom_Engine {
                     normals.Z = assImpMeshNormal.Z;
                 }
 
-                if (assImpMesh.HasTangentBasis) {
+                /*if (assImpMesh.HasTangentBasis) {
                     Assimp.Vector3D assImpMeshTangent = assImpMeshTangents[i];
                     tangent.X = assImpMeshTangent.X;
                     tangent.Y = assImpMeshTangent.Y;
                     tangent.Z = assImpMeshTangent.Z;
-                }
+                }*/
 
                 if (assImpMesh.HasTextureCoords(0)) {
                     Assimp.Vector3D assImpMeshTexCoord = assImpMeshTextureCoords[0][i];
@@ -136,8 +136,12 @@ namespace Maelstrom_Engine {
             Assimp.Material assImpMeshMaterial = scene.Materials[assImpMesh.MaterialIndex];
             Texture diffuse = ProcessTexture(TextureType.Diffuse, scene, assImpMeshMaterial);
             Texture normalMap = ProcessTexture(TextureType.Height, scene, assImpMeshMaterial);
+            Texture specularMap = ProcessTexture(TextureType.Specular, scene, assImpMeshMaterial);
 
-            Material material = new Material(diffuse, normalMap, Game.defaultDiffuseShader);
+            if (specularMap == null) {
+                specularMap = Game.defaultSpecular;
+            }
+            Material material = new Material(diffuse, normalMap, specularMap, Game.defaultDiffuseShader);
             return material;
         }
 
