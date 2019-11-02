@@ -1,5 +1,7 @@
 ﻿using Assimp;
 using Assimp.Configs;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OpenTK;
 using System;
 using System.Collections.Generic;
@@ -35,126 +37,34 @@ namespace Maelstrom_Engine {
         private void LoadModel(string fileName) {
 
             string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Assets", fileName);
-
-            using (AssimpContext importer = new AssimpContext()) {
-                try {
-                    importer.SetConfig(new NormalSmoothingAngleConfig(66.0f));
-                    Scene scene = importer.ImportFile(path, PostProcessPreset.TargetRealTimeQuality | PostProcessSteps.FlipWindingOrder);
-
-                    if (scene != null && scene.HasMeshes)
-                        Console.WriteLine($"Loading {fileName}");
-                    else {
-                        Console.WriteLine($"ERROR: Failed to load {fileName}");
-                        return;
-                    }
-
-                    ProcessNode(scene.RootNode, scene);
-                    Console.WriteLine($"Finished loading {fileName}");
-                }
-                catch (Exception e) {
-                    Console.WriteLine($"ERROR: Somthing went wrong while loading the mesh {fileName}. " + e.Message);
-                }
+            string jsonData = File.ReadAllText(path);
+            MeshData[] meshesData = JsonConvert.DeserializeObject<MeshData[]>(jsonData);
+            for (int i = 0; i < meshesData.Length; i++) {
+                MeshData meshdata = meshesData[i];
+                meshes.Add(ProcessMeshData(meshdata));
             }
         }
 
-        private void ProcessNode(Node node, Scene scene) {
-            List<int> assImpNodeMeshIndicies = node.MeshIndices;
-            for (int i = 0; i < assImpNodeMeshIndicies.Count; i++) {
-                Assimp.Mesh assImpMesh = scene.Meshes[assImpNodeMeshIndicies[i]];
-
-                Mesh newMesh = ProcessMesh(assImpMesh, scene);
-                meshes.Add(newMesh);
+        private Mesh ProcessMeshData(MeshData meshData) {
+            Texture diffuse;
+            if (meshData.materialData.diffuse.fileName != null && !meshData.materialData.diffuse.fileName.Equals("")) {
+                diffuse = Texture.LoadTextureFromPath("Assets\\" + Path.GetFileName(meshData.materialData.diffuse.fileName));
+            } else {
+                diffuse = Game.defaultDiffuseTexture;
             }
 
-            foreach (Node child in node.Children) {
-                ProcessNode(child, scene);
+            Texture specular;
+            if (meshData.materialData.specularMap.fileName != null && !meshData.materialData.specularMap.fileName.Equals("")) {
+                specular = Texture.LoadTextureFromPath("Assets\\" + Path.GetFileName(meshData.materialData.specularMap.fileName));
             }
-        }
-
-        private Mesh ProcessMesh(Assimp.Mesh assImpMesh, Scene scene) {
-            Vertex[] vertices = ProcessVerticies(assImpMesh);
-            uint[] meshIndices = ProcessIndices(assImpMesh);
-            Material material = ProcessMaterials(assImpMesh, scene);
-
-            return new Mesh(vertices, meshIndices, material);
-        }
-
-        private Vertex[] ProcessVerticies(Assimp.Mesh assImpMesh) {
-            List<Assimp.Vector3D> assImpMeshVertices = assImpMesh.Vertices;
-            List<Assimp.Vector3D> assImpMeshNormals = assImpMesh.Normals;
-            List<Assimp.Vector3D> assImpMeshTangents = assImpMesh.Tangents;
-            List<Assimp.Vector3D>[] assImpMeshTextureCoords = assImpMesh.TextureCoordinateChannels;
-
-            Vertex[] vertices = new Vertex[assImpMeshVertices.Count];
-            for (int i = 0; i < assImpMeshVertices.Count; i++) {
-                Assimp.Vector3D position = assImpMeshVertices[i];
-                Vector3 pos = new Vector3(position.X, position.Y, position.Z);
-                Vector3 normals = new Vector3(0, 0, 0);
-                Vector3 tangent = new Vector3(0, 0, 0);
-                Vector2 texCoords = new Vector2(0, 0);
-
-                if (assImpMesh.HasNormals) {
-                    Assimp.Vector3D assImpMeshNormal = assImpMeshNormals[i];
-                    normals.X = assImpMeshNormal.X;
-                    normals.Y = assImpMeshNormal.Y;
-                    normals.Z = assImpMeshNormal.Z;
-                }
-
-                /*if (assImpMesh.HasTangentBasis) {
-                    Assimp.Vector3D assImpMeshTangent = assImpMeshTangents[i];
-                    tangent.X = assImpMeshTangent.X;
-                    tangent.Y = assImpMeshTangent.Y;
-                    tangent.Z = assImpMeshTangent.Z;
-                }*/
-
-                if (assImpMesh.HasTextureCoords(0)) {
-                    Assimp.Vector3D assImpMeshTexCoord = assImpMeshTextureCoords[0][i];
-                    texCoords.X = assImpMeshTexCoord.X;
-                    texCoords.Y = assImpMeshTexCoord.Y;
-                }
-
-                vertices[i] = new Vertex(pos, normals, tangent, texCoords);
+            else {
+                specular = Game.defaultSpecularTexture;
             }
 
-            return vertices;
-        }
+            Material material = new Material(diffuse, null, specular, Game.defaultDiffuseShader);
+            Mesh mesh = new Mesh(meshData.vertices, meshData.indices, material);
 
-        private uint[] ProcessIndices(Assimp.Mesh assImpMesh) {
-            List<Face> assImpMeshFaces = assImpMesh.Faces;
-            List<uint> meshIndices = new List<uint>(assImpMesh.FaceCount * 3);
-            for (int i = 0; i < assImpMeshFaces.Count; i++) {
-                List<int> faceIndices = assImpMeshFaces[i].Indices;
-                for (int j = 0; j < faceIndices.Count; j++) {
-                    meshIndices.Add((uint)faceIndices[j]);
-                }
-            }
-
-            return meshIndices.ToArray();
-        }
-
-        private Material ProcessMaterials(Assimp.Mesh assImpMesh, Scene scene) {
-            Assimp.Material assImpMeshMaterial = scene.Materials[assImpMesh.MaterialIndex];
-            Texture diffuse = ProcessTexture(TextureType.Diffuse, scene, assImpMeshMaterial);
-            Texture normalMap = ProcessTexture(TextureType.Height, scene, assImpMeshMaterial);
-            Texture specularMap = ProcessTexture(TextureType.Specular, scene, assImpMeshMaterial);
-
-            if (specularMap == null) {
-                specularMap = Game.defaultSpecular;
-            }
-            Material material = new Material(diffuse, normalMap, specularMap, Game.defaultDiffuseShader);
-            return material;
-        }
-
-        private static Texture ProcessTexture(TextureType textureType, Scene scene, Assimp.Material assImpMeshMaterial) {
-            Texture texture;
-            TextureSlot textureSlot;
-            assImpMeshMaterial.GetMaterialTexture(textureType, 0, out textureSlot);
-
-            if (textureSlot.FilePath == null)
-                return null;
-            texture = LoadTexture(scene, textureSlot);
-
-            return texture;
+            return mesh;
         }
 
         private static Texture LoadTexture(Scene scene, TextureSlot textureSlot) {
@@ -171,5 +81,112 @@ namespace Maelstrom_Engine {
 
             return diffuse;
         }
+    }
+
+
+    public class VertexConvertor : JsonConverter {
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
+            var vertices = value as Vertex[];
+
+            writer.WriteStartObject();
+            writer.WritePropertyName("size");
+            writer.WriteValue(vertices.Length);
+
+            writer.WritePropertyName("values");
+            writer.WriteStartArray();
+            for (int i = 0; i < vertices.Length; i++) {
+                writer.WriteStartObject();
+
+                writer.WritePropertyName("position");
+                WriteVector3(vertices[i].Position, writer);
+
+                writer.WritePropertyName("normal");
+                WriteVector3(vertices[i].Normal, writer);
+
+                writer.WritePropertyName("texCoord");
+                WriteVector2(vertices[i].TextureCoord, writer);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteEndObject();
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
+            JObject jObject = JObject.Load(reader);
+            var properties = jObject.Properties().ToList();
+            Vertex[] vertices = new Vertex[(int)properties[0].Value];
+
+            JToken verticesJToken = properties[1].Value;
+            for (int i = 0; i < vertices.Length; i++) {
+                JToken vertexToken = verticesJToken[i];
+                Vector3 position = ReadVector3(vertexToken["position"]);
+                Vector3 normal = ReadVector3(vertexToken["normal"]);
+                Vector2 texCoord = ReadVector2(vertexToken["texCoord"]);
+
+                vertices[i] = new Vertex(position, normal, new Vector3(), texCoord);
+            }
+            return vertices;
+        }
+
+        private Vector2 ReadVector2(JToken token) {
+            Vector2 vec = new Vector2((float)token[0], (float)token[1]);
+            return vec;
+        }
+        private Vector3 ReadVector3(JToken token) {
+            Vector3 vec = new Vector3((float)token[0], (float)token[1], (float)token[2]);
+            return vec;
+        }
+
+        public override bool CanRead {
+            get { return true; }
+        }
+
+        public override bool CanConvert(Type objectType) {
+            return objectType == typeof(Vertex);
+        }
+
+        private void WriteVector3(Vector3 vec, JsonWriter writer) {
+            writer.WriteStartArray();
+            writer.WriteValue(vec.X);
+            writer.WriteValue(vec.Y);
+            writer.WriteValue(vec.Z);
+            writer.WriteEndArray();
+        }
+
+        private void WriteVector2(Vector2 vec, JsonWriter writer) {
+            writer.WriteStartArray();
+            writer.WriteValue(vec.X);
+            writer.WriteValue(vec.Y);
+            writer.WriteEndArray();
+        }
+    }
+
+    public struct MeshData {
+        [JsonConverter(typeof(VertexConvertor))]
+        public Vertex[] vertices;
+        public uint[] indices;
+        public MaterialData materialData;
+
+        public MeshData(Vertex[] vertices, uint[] indices, MaterialData materialData) {
+            this.vertices = vertices;
+            this.indices = indices;
+            this.materialData = materialData;
+        }
+    }
+
+    public struct MaterialData {
+        public TextureData diffuse;
+        public TextureData normalMap;
+        public TextureData specularMap;
+
+        public MaterialData(TextureData diffuse, TextureData normalMap, TextureData specularMap) {
+            this.diffuse = diffuse;
+            this.normalMap = normalMap;
+            this.specularMap = specularMap;
+        }
+    }
+
+    public struct TextureData {
+        public string fileName;
     }
 }

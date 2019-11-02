@@ -19,16 +19,16 @@ namespace Maelstrom_Engine {
         public static Shader defaultDiffuseShader;
         public static Shader defaultLightShader;
 
-        public static Texture defaultSpecular;
+        public static Texture defaultDiffuseTexture, defaultSpecularTexture;
 
         Camera camera;
 
         float time = 0;
 
-        Model nanoSuit, axe;
+        Model nanoSuit, axe, plane;
         Light light;
 
-        Transform nanoSuitTransform, axeTransform;
+        Transform nanoSuitTransform, axeTransform, planeTransform;
 
         public Game(int width, int height, string title)
             : base(width,
@@ -57,7 +57,7 @@ namespace Maelstrom_Engine {
                 //defaultDiffuseShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
             }
 
-            //light.Update(deltaTime);
+            light.Update(deltaTime);
 
             camera.Update(deltaTime, keyState, mouse);
 
@@ -72,11 +72,11 @@ namespace Maelstrom_Engine {
 
             light.Render(null, camera);
 
-            defaultDiffuseShader.SetVec4("lightColor", new Vector4(1f, .9f, .8f, 1));
             defaultDiffuseShader.SetVec3("lightPos", light.transform.position);
 
-            nanoSuit.Render(nanoSuitTransform, camera);
+            //nanoSuit.Render(nanoSuitTransform, camera);
             axe.Render(axeTransform, camera);
+            plane.Render(planeTransform, camera);
 
             SwapBuffers();
 
@@ -101,14 +101,18 @@ namespace Maelstrom_Engine {
             defaultDiffuseShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
             defaultLightShader = new Shader("Shaders/light_shader.vert", "Shaders/light_shader.frag");
 
-            defaultSpecular = Texture.CreateTexture(new Image<Rgba32>(SixLabors.ImageSharp.Configuration.Default, 1, 1, Rgba32.White));
-            light = new Light();
+            defaultDiffuseTexture = Texture.CreateTexture(new Image<Rgba32>(SixLabors.ImageSharp.Configuration.Default, 1, 1, Rgba32.White));
+            defaultSpecularTexture = Texture.CreateTexture(new Image<Rgba32>(SixLabors.ImageSharp.Configuration.Default, 1, 1, Rgba32.White));
+            light = new Light(new Vector4(1,0,1,1), 0);
 
             nanoSuitTransform = new Transform(new Vector3(0, 0, -10), new Vector3(0, 45, 0), new Vector3(1f, 1f, 1f));
-            axeTransform = new Transform(new Vector3(10, 0, 0), new Vector3(0, 0, 45), new Vector3(10f, 10f, 10f));
+            axeTransform = new Transform(new Vector3(10, 0, 0), new Vector3(0, 0, 0), new Vector3(10f, 10f, 10f));
+            planeTransform = new Transform(new Vector3(0, -1, 0), new Vector3(0, 0, 0), new Vector3(10f, 1f, 10f));
 
-            nanoSuit = new Model("model.dae");
-            axe = new Model("Viking_Axe_Straight.fbx");
+            //nanoSuit = new Model("model.dae");
+            axe = new Model("Viking_Axe_Straight.fbx.json");
+
+            plane = new Model("plane.obj.json");
 
             camera = new Camera(this);
 
