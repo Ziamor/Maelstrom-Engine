@@ -9,25 +9,28 @@ namespace Maelstrom_Engine {
     public class Light : Renderable, Updatable {
         Model lightMesh;
         public Transform transform;
+        public Vector3 lightColor;
+
         float offset = 0;
-        Vector4 lightColor;
+        float dist = 10;
         float t;
-        public Light(Vector4 lightColor, float offset) {
+        public Light(Vector3 lightColor, float offset) {
             this.lightColor = lightColor;
+            this.offset = offset;
+
             lightMesh = new Model("sphere.obj.json");
             lightMesh.OverrideMaterial(new Material(null, null, null, Game.defaultLightShader));
             transform = new Transform(new Vector3(0, 2, 0), new Vector3(0, 0, 0), new Vector3(1f, 1f, 1f));
         }
 
         public void Render(Transform t, Camera camera) {
-            Game.defaultDiffuseShader.SetVec4("lightColor", lightColor);
-            Game.defaultLightShader.SetVec4("lightColor", lightColor);
+            Game.defaultLightShader.SetVec3("lightColor", lightColor);
             lightMesh.Render(transform, camera);
         }
 
         public void Update(float deltaTime) {
             t += deltaTime;
-            transform.position = new Vector3((float)Math.Sin(t) * 20 + offset, (float)Math.Sin(t) * 20 + offset, (float)Math.Cos(t) * 20 + offset);
+            transform.position = new Vector3((float)Math.Sin(t + offset) * dist, dist, (float)Math.Cos(t + offset) * dist);
         }
     }
 }

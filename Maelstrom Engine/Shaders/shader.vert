@@ -10,8 +10,6 @@ out vec3 normal;
 out vec3 worldPos;
 out mat3 TBN;
 
-out vec3 test;
-
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
@@ -23,8 +21,6 @@ void main(void)
 	worldPos = vec3(vec4(aPosition, 1.0) * model);
 	texCoord = aTexCoord;
 	normal = normalize(aNormal * mat3(normalMat));
-
-	test = vec3(vec4(aTangent, 1.0) * model);
 
 	vec3 T = normalize(vec3(vec4(aTangent, 0.0) * model));
 	vec3 B = normalize(vec3(vec4(cross(aNormal, aTangent), 0.0) * model));

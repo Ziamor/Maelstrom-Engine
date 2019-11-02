@@ -26,7 +26,7 @@ namespace Maelstrom_Engine {
         float time = 0;
 
         Model nanoSuit, axe, plane;
-        Light light;
+        List<Light> lights;
 
         Transform nanoSuitTransform, axeTransform, planeTransform;
 
@@ -57,7 +57,9 @@ namespace Maelstrom_Engine {
                 //defaultDiffuseShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
             }
 
-            light.Update(deltaTime);
+            for (int i = 0; i < lights.Count; i++) {
+                lights[i].Update(deltaTime);
+            }
 
             camera.Update(deltaTime, keyState, mouse);
 
@@ -70,9 +72,20 @@ namespace Maelstrom_Engine {
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            light.Render(null, camera);
+            for (int i = 0; i < lights.Count; i++) {
+                Light light = lights[i];
+                light.Render(null, camera);
 
-            defaultDiffuseShader.SetVec3("lightPos", light.transform.position);
+                defaultDiffuseShader.SetFloat("directionalLight.ambientStrength", 0.1f);
+                defaultDiffuseShader.SetVec3("directionalLight.diffuse", light.lightColor);
+                defaultDiffuseShader.SetVec3("directionalLight.dir", new Vector3(0.5f, 0.25f, 0));
+
+                defaultDiffuseShader.SetVec3($"pointLights[{i}].diffuse", light.lightColor);
+                defaultDiffuseShader.SetVec3($"pointLights[{i}].position", light.transform.position);
+                defaultDiffuseShader.SetFloat($"pointLights[{i}].constant", 1f);
+                defaultDiffuseShader.SetFloat($"pointLights[{i}].linear", 0.09f);
+                defaultDiffuseShader.SetFloat($"pointLights[{i}].quadratic", 0.032f);
+            }            
 
             //nanoSuit.Render(nanoSuitTransform, camera);
             axe.Render(axeTransform, camera);
@@ -92,6 +105,14 @@ namespace Maelstrom_Engine {
             base.OnMouseMove(e);
         }
 
+        private Vector3 HexToRgb(int hex) {
+            float r = ((hex & 0xff0000) >> 16) / 256f;
+            float g = ((hex & 0xff00) >> 8) / 256f;
+            float b = (hex & 0xff) / 256f;
+
+            return new Vector3(r, g, b);
+        }
+
         protected override void OnLoad(EventArgs e) {
             CursorVisible = false;
 
@@ -103,8 +124,10 @@ namespace Maelstrom_Engine {
 
             defaultDiffuseTexture = Texture.CreateTexture(new Image<Rgba32>(SixLabors.ImageSharp.Configuration.Default, 1, 1, Rgba32.White));
             defaultSpecularTexture = Texture.CreateTexture(new Image<Rgba32>(SixLabors.ImageSharp.Configuration.Default, 1, 1, Rgba32.White));
-            light = new Light(new Vector4(1,0,1,1), 0);
 
+            lights = new List<Light>();
+            lights.Add(new Light(HexToRgb(0xfff187), 0));
+            lights.Add(new Light(HexToRgb(0x8589ff), 3.14f));
             nanoSuitTransform = new Transform(new Vector3(0, 0, -10), new Vector3(0, 45, 0), new Vector3(1f, 1f, 1f));
             axeTransform = new Transform(new Vector3(10, 0, 0), new Vector3(0, 0, 0), new Vector3(10f, 10f, 10f));
             planeTransform = new Transform(new Vector3(0, -1, 0), new Vector3(0, 0, 0), new Vector3(10f, 1f, 10f));

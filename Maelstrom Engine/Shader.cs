@@ -84,11 +84,15 @@ namespace Maelstrom_Engine {
         public int GetAttribLocation(string attribName) {
             return GL.GetAttribLocation(Handle, attribName);
         }
+        public void SetFloat(string name, float value) {
+            int location = GL.GetUniformLocation(Handle, name);
+            GL.ProgramUniform1(Handle, location, value);
+        }
 
         public void SetInt(string name, int value) {
             int location = GL.GetUniformLocation(Handle, name);
 
-            GL.Uniform1(location, value);
+            GL.ProgramUniform1(Handle, location, value);
         }
 
         internal void SetMatrix4(string name, Matrix4 matrix) {
