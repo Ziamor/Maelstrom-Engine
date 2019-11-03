@@ -90,6 +90,7 @@
     <Compile Include="Shader.cs" />
     <Compile Include="Texture.cs" />
     <Compile Include="Transform.cs" />
+    <Compile Include="UI\Font.cs" />
     <Compile Include="Updatable.cs" />
   </ItemGroup>
   <ItemGroup>

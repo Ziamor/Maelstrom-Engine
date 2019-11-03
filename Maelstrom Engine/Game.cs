@@ -13,6 +13,7 @@ using System.IO;
 using Assimp.Configs;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using Maelstrom.UI;
 
 namespace Maelstrom {
     class Game : GameWindow {
@@ -139,6 +140,7 @@ namespace Maelstrom {
 
             camera = new Camera(this);
 
+            Font font = new Font("Arial");
             base.OnLoad(e);
         }
 
