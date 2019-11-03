@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 
-namespace Maelstrom_Engine {
+namespace MaelstromEngine {
     public class Shader : IDisposable {
         public readonly int Handle;
         private readonly Dictionary<string, int> uniformLocations;

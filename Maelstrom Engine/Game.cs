@@ -14,7 +14,7 @@ using Assimp.Configs;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace Maelstrom_Engine {
+namespace MaelstromEngine {
     class Game : GameWindow {
         public static Shader defaultDiffuseShader;
         public static Shader defaultLightShader;

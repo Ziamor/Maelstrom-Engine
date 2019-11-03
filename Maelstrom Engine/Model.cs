@@ -12,7 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Maelstrom_Engine {
+namespace MaelstromEngine {
     public class Model : Renderable {
         List<Mesh> meshes;
 
