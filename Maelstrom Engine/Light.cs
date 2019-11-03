@@ -19,12 +19,12 @@ namespace Maelstrom {
             this.offset = offset;
 
             lightMesh = new Model("sphere.obj.json");
-            lightMesh.OverrideMaterial(new Material(null, null, null, Game.defaultLightShader));
+            lightMesh.OverrideMaterial(new Material(null, null, null, Game.lightShader));
             transform = new Transform(new Vector3(0, 2, 0), new Vector3(0, 0, 0), new Vector3(1f, 1f, 1f));
         }
 
         public void Render(Transform t, Camera camera) {
-            Game.defaultLightShader.SetVec3("lightColor", lightColor);
+            Game.lightShader.SetVec3("lightColor", lightColor);
             lightMesh.Render(transform, camera);
         }
 

@@ -50,10 +50,10 @@ namespace Maelstrom.UI {
                     ParseChar(currentLine);
                     break;
                 case "kernings":
-                    Console.WriteLine("kernings");
+                    //Console.WriteLine("kernings");
                     break;
                 case "kerning":
-                    Console.WriteLine("kerning");
+                    //Console.WriteLine("kerning");
                     break;
             }
         }

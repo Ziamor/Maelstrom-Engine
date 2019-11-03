@@ -17,8 +17,8 @@ using Maelstrom.UI;
 
 namespace Maelstrom {
     class Game : GameWindow {
-        public static Shader defaultDiffuseShader;
-        public static Shader defaultLightShader;
+        public static MeshShader meshShader;
+        public static LightShader lightShader;
 
         public static Texture defaultDiffuseTexture, defaultSpecularTexture;
 
@@ -77,15 +77,15 @@ namespace Maelstrom {
                 Light light = lights[i];
                 light.Render(null, camera);
 
-                defaultDiffuseShader.SetFloat("directionalLight.ambientStrength", 0.1f);
-                defaultDiffuseShader.SetVec3("directionalLight.diffuse", light.lightColor);
-                defaultDiffuseShader.SetVec3("directionalLight.dir", new Vector3(0.5f, 0.25f, 0));
+                meshShader.SetFloat("directionalLight.ambientStrength", 0.1f);
+                meshShader.SetVec3("directionalLight.diffuse", light.lightColor);
+                meshShader.SetVec3("directionalLight.dir", new Vector3(0.5f, 0.25f, 0));
 
-                defaultDiffuseShader.SetVec3($"pointLights[{i}].diffuse", light.lightColor);
-                defaultDiffuseShader.SetVec3($"pointLights[{i}].position", light.transform.position);
-                defaultDiffuseShader.SetFloat($"pointLights[{i}].constant", 1f);
-                defaultDiffuseShader.SetFloat($"pointLights[{i}].linear", 0.09f);
-                defaultDiffuseShader.SetFloat($"pointLights[{i}].quadratic", 0.032f);
+                meshShader.SetVec3($"pointLights[{i}].diffuse", light.lightColor);
+                meshShader.SetVec3($"pointLights[{i}].position", light.transform.position);
+                meshShader.SetFloat($"pointLights[{i}].constant", 1f);
+                meshShader.SetFloat($"pointLights[{i}].linear", 0.09f);
+                meshShader.SetFloat($"pointLights[{i}].quadratic", 0.032f);
             }            
 
             //nanoSuit.Render(nanoSuitTransform, camera);
@@ -120,8 +120,8 @@ namespace Maelstrom {
             GL.ClearColor(13 / 256f, 16 / 256f, 28 / 256f, 1.0f);
             GL.Enable(EnableCap.DepthTest);
 
-            defaultDiffuseShader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
-            defaultLightShader = new Shader("Shaders/light_shader.vert", "Shaders/light_shader.frag");
+            meshShader = new MeshShader();
+            lightShader = new LightShader();
 
             defaultDiffuseTexture = Texture.CreateTexture(new Image<Rgba32>(SixLabors.ImageSharp.Configuration.Default, 1, 1, Rgba32.White));
             defaultSpecularTexture = Texture.CreateTexture(new Image<Rgba32>(SixLabors.ImageSharp.Configuration.Default, 1, 1, Rgba32.White));
@@ -145,9 +145,9 @@ namespace Maelstrom {
         }
 
         protected override void OnUnload(EventArgs e) {
-            defaultDiffuseShader.Dispose();
+            meshShader.Dispose();
 
-            defaultLightShader.Dispose();
+            lightShader.Dispose();
 
             base.OnUnload(e);
         }

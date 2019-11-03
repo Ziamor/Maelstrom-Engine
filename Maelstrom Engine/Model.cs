@@ -61,7 +61,7 @@ namespace Maelstrom {
                 specular = Game.defaultSpecularTexture;
             }
 
-            Material material = new Material(diffuse, null, specular, Game.defaultDiffuseShader);
+            Material material = new Material(diffuse, null, specular, Game.meshShader);
             Mesh mesh = new Mesh(meshData.vertices, meshData.indices, material);
 
             return mesh;

@@ -7,7 +7,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E8714FEB-72E6-4FF3-A4F4-E78CE26D59D2}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Maelstrom_Engine</RootNamespace>
+    <RootNamespace>Maelstrom</RootNamespace>
     <AssemblyName>Maelstrom Engine</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -81,8 +81,10 @@
     <Compile Include="Camera.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Light.cs" />
+    <Compile Include="LightShader.cs" />
     <Compile Include="Material.cs" />
     <Compile Include="Mesh.cs" />
+    <Compile Include="MeshShader.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -99,7 +101,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders/**" CopyToOutputDirectory="PreserveNewest" />
     <None Include="Assets/**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
