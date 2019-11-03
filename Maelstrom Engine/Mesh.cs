@@ -10,7 +10,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Input;
 
-namespace MaelstromEngine {
+namespace Maelstrom {
     public class Mesh : Renderable {
         Vertex[] vertices;
         uint[] indices;

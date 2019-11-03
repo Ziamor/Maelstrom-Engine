@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MaelstromEngine {
+namespace Maelstrom {
     public interface Renderable {
         void Render(Transform transform, Camera camera);
     }

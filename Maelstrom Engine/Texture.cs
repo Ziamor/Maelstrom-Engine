@@ -10,7 +10,7 @@ using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace MaelstromEngine {
+namespace Maelstrom {
     public class Texture : IDisposable {
         public readonly int Handle;
 

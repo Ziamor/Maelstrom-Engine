@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
-namespace MaelstromEngine {
+namespace Maelstrom {
     public class Transform {
         public Vector3 position { get; set; }
         public Vector3 rotation { get; set; }

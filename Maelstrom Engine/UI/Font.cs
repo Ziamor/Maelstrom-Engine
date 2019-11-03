@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MaelstromEngine.UI {
+namespace Maelstrom.UI {
     class Font {
     }
 }
