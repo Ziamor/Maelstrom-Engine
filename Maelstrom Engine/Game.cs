@@ -26,10 +26,10 @@ namespace Maelstrom {
 
         float time = 0;
 
-        Model nanoSuit, axe, plane;
+        Model axe, plane;
         List<Light> lights;
 
-        Transform nanoSuitTransform, axeTransform, planeTransform;
+        Transform axeTransform, planeTransform;
 
         public Game(int width, int height, string title)
             : base(width,
@@ -88,7 +88,6 @@ namespace Maelstrom {
                 meshShader.SetFloat($"pointLights[{i}].quadratic", 0.032f);
             }            
 
-            //nanoSuit.Render(nanoSuitTransform, camera);
             axe.Render(axeTransform, camera);
             plane.Render(planeTransform, camera);
 
@@ -129,11 +128,10 @@ namespace Maelstrom {
             lights = new List<Light>();
             lights.Add(new Light(HexToRgb(0xfff187), 0));
             lights.Add(new Light(HexToRgb(0x8589ff), 3.14f));
-            nanoSuitTransform = new Transform(new Vector3(0, 0, -10), new Vector3(0, 45, 0), new Vector3(1f, 1f, 1f));
+
             axeTransform = new Transform(new Vector3(10, 0, 0), new Vector3(0, 0, 0), new Vector3(10f, 10f, 10f));
             planeTransform = new Transform(new Vector3(0, -1, 0), new Vector3(0, 0, 0), new Vector3(10f, 1f, 10f));
 
-            //nanoSuit = new Model("model.dae");
             axe = new Model("Viking_Axe_Straight.fbx.json");
 
             plane = new Model("plane.obj.json");

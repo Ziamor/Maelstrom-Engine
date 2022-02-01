@@ -20,7 +20,7 @@ namespace Maelstrom {
 
             lightMesh = new Model("sphere.obj.json");
             lightMesh.OverrideMaterial(new Material(null, null, null, Game.lightShader));
-            transform = new Transform(new Vector3(0, 2, 0), new Vector3(0, 0, 0), new Vector3(1f, 1f, 1f));
+            transform = new Transform(new Vector3(0, 1, 0), new Vector3(0, 0, 0), new Vector3(1f, 1f, 1f));
         }
 
         public void Render(Transform t, Camera camera) {
@@ -30,7 +30,7 @@ namespace Maelstrom {
 
         public void Update(float deltaTime) {
             t += deltaTime;
-            transform.position = new Vector3((float)Math.Sin(t + offset) * dist, dist, (float)Math.Cos(t + offset) * dist);
+            transform.position = new Vector3((float)Math.Sin(t + offset) * dist, 1, (float)Math.Cos(t + offset) * dist);
         }
     }
 }
